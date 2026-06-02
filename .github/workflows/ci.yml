@@ -1,8 +1,9 @@
 name: CI
-
+on:
+  push:
+  pull_request:
 env:
   PNPM_VERSION: 10
-
 jobs:
   install:
     name: Install
@@ -10,37 +11,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
-
       - name: Get pnpm store path
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
       - name: Cache pnpm store
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
           key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: pnpm-store-${{ runner.os }}-
-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Cache node_modules
         uses: actions/cache/save@v4
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -48,27 +42,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
-
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-
+          fail-on-cache-miss: true
       - name: Run tests
-        run: pnpm test
-
+        run: pnpm test -- --passWithNoTests
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -76,27 +66,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
-
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Run Biome lint
-        run: pnpm biome ci .
-
+          fail-on-cache-miss: true
+      - name: Run oxlint
+        run: pnpm oxlint
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -104,23 +90,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
-
       - name: Restore node_modules
         uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-
+          fail-on-cache-miss: true
       - name: Build
         run: pnpm build

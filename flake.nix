@@ -14,12 +14,14 @@
         buildInputs = [
           pkgs.nodejs_24
           pkgs.pnpm
+          pkgs.biome
         ];
 
         shellHook = ''
           echo "🚀Dev Environment Loaded"
           echo "- Node.js:    $(node -v 2>/dev/null || echo 'not installed')"
           echo "- pnpm:        $(pnpm -v 2>/dev/null || echo 'not installed')"
+          echo "- biome:        $(biome -V 2>/dev/null || echo 'not installed')"
         '';
       };
     };
