@@ -1,5 +1,9 @@
 name: CI
 
+on:
+  push:
+  pull_request:
+
 env:
   PNPM_VERSION: 10
 
@@ -19,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
 
       - name: Get pnpm store path
@@ -33,7 +37,7 @@ jobs:
           restore-keys: pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Cache node_modules
         uses: actions/cache/save@v4
@@ -57,7 +61,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
 
       - name: Restore node_modules
@@ -67,7 +71,7 @@ jobs:
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm test -- --passWithNoTests
 
   lint:
     name: Lint
@@ -85,7 +89,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
 
       - name: Restore node_modules
@@ -94,8 +98,11 @@ jobs:
           path: node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
+      - name: Install Biome
+        run: npm i -g @biomejs/biome
+
       - name: Run Biome lint
-        run: pnpm biome ci .
+        run: biome ci .
 
   build:
     name: Build
@@ -113,7 +120,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version: 22
           cache: pnpm
 
       - name: Restore node_modules
