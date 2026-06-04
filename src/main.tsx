@@ -8,6 +8,8 @@ import "./index.css";
 import { routeTree } from "./routeTree.gen";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { Toaster } from "sonner";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 const queryClient = new QueryClient();
 
@@ -38,7 +40,9 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider defaultTheme="dark" storageKey="valemus-assessment">
       <TooltipProvider>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <Provider store={store}>
+            <App />
+          </Provider>
         </QueryClientProvider>
       </TooltipProvider>
       <Toaster />
