@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import projectSliceReducer from "./projectSlice";
+import investmentSliceReducer from "./investmentSlice.ts";
 import {
   useDispatch,
   useSelector,
@@ -9,6 +10,7 @@ import {
 export const store = configureStore({
   reducer: {
     projects: projectSliceReducer,
+    investments: investmentSliceReducer
   },
   devTools: true, // Should be based on env (okay for assessment)
 });

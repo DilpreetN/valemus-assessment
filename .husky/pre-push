@@ -1,1 +1,3 @@
 pnpm oxlint
+
+pnpm test

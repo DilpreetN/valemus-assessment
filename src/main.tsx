@@ -13,6 +13,8 @@ import { store } from "./store/store";
 
 const queryClient = new QueryClient();
 
+type QueryKey = ['projects', 'categories', 'investments'];
+
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -28,6 +30,8 @@ const router = createRouter({
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
+    queryKey: QueryKey,
+    mutationKey: QueryKey,
   }
 }
 
